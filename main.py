@@ -48,25 +48,65 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             download_link = None
             
-            try: 
-                # Wait for the download button container to appear and then save the link
-                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "download-link")))
-                download_container = driver.find_element(By.CLASS_NAME, "download")
-                download_link = download_container.find_element(By.CLASS_NAME, "download-link").get_attribute("href")
-            except Exception as e:
-                logging.error(f"Error while extracting download link: {e}")
+
+            # Wait for the download button container to appear and then save the link
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "download-link")))
+            download_container = driver.find_element(By.CLASS_NAME, "download")
+            download_link = download_container.find_element(By.CLASS_NAME, "download-link").get_attribute("href")
 
             if download_link:
                 await context.bot.send_message(chat_id=update.effective_chat.id, text=download_link)
             else:
                 await context.bot.send_message(chat_id=update.effective_chat.id, text="No download link found. Insert a valid link.")
         except Exception as e:
-            logging.error(f"Error: {e}. Exception raised.")
+            logging.error(f"Error: {e}. Exception raised for TikTok logic.")
         finally:
             # Quit the WebDriver
-            driver.quit()   
+            driver.quit()
+
+    elif 'instagram.com' in message:
+        try:
+            # Configure Selenium options
+            chrome_options = Options()
+            driver = webdriver.Chrome(options=chrome_options)
+            chrome_options.add_argument("--headless")  # Run in headless mode (without opening browser window)
+
+            actions = ActionChains(driver)
+
+            # Navigate to the ttdownloader page
+            driver.get("https://saveinsta.app/en/instagram-reels-video-download")
+
+            # Fill in the URL directly into the field
+            url_input = driver.find_element(By.ID, "s_input")
+            url_input.send_keys("https://www.instagram.com/reels/C-Jn-r6sHVf/")
+
+            # Remove the cookie box consent 
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@class='fc-button fc-cta-consent fc-primary-button']")))
+            consent_button = driver.find_element(By.XPATH, "//button[@class='fc-button fc-cta-consent fc-primary-button']")
+            actions.move_to_element(consent_button).click().perform()
+
+
+            # Click the 'Download' button (assuming there's a button to be clicked to start the download process)
+            download_button = driver.find_element(By.XPATH, "//button[@type='button']")
+            actions.move_to_element(download_button).click().perform()
+
+            download_link = None
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@class='download-items__btn']/a[@class='abutton is-success is-fullwidth btn-premium mt-3']")))
+            download_link = driver.find_element(By.XPATH, "//div[@class='download-items__btn']/a[@class='abutton is-success is-fullwidth btn-premium mt-3']").get_attribute("href")
+            
+            if download_link:
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=download_link)
+            else:
+                await context.bot.send_message(chat_id=update.effective_chat.id, text="No download link found. Insert a valid link.")
+        
+        except Exception as e:
+            logging.error(f"Error: {e}. Exception raised for Instagram logic.")
+        
+        finally:
+            # Quit the WebDriver
+            driver.quit()
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please send a valid TikTok link.")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please send a valid TikTok or Instagram reel link.")
 
 if __name__ == '__main__':
     token = Path('token.txt').read_text()
