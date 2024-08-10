@@ -24,7 +24,12 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             # Configure Selenium options
             chrome_options = Options()
-            chrome_options.add_argument("--headless")  # Run in headless mode (without opening browser window)
+            chrome_options.add_argument("--headless")  # Run in headless mode
+            chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+            chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+            chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration (often unnecessary for headless)
+            chrome_options.add_argument("--disable-setuid-sandbox")
+            chrome_options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
             driver = webdriver.Chrome(options=chrome_options)
 
             # Navigate to the ttdownloader page
@@ -68,8 +73,13 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             # Configure Selenium options
             chrome_options = Options()
+            chrome_options.add_argument("--headless")  # Run in headless mode
+            chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+            chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+            chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration (often unnecessary for headless)
+            chrome_options.add_argument("--disable-setuid-sandbox")
+            chrome_options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
             driver = webdriver.Chrome(options=chrome_options)
-            chrome_options.add_argument("--headless")  # Run in headless mode (without opening browser window)
 
             actions = ActionChains(driver)
 
