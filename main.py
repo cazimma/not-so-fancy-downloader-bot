@@ -16,7 +16,7 @@ logging.basicConfig(
     #filemode='a'  # 'a' for append mode, 'w' to overwrite each time
 )
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I convert TikTok links to videos that can be easily downloaded!")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I convert TikTok or Instagram reel links to videos that can be easily downloaded!")
 
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message.text
@@ -88,7 +88,7 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             # Fill in the URL directly into the field
             url_input = driver.find_element(By.ID, "s_input")
-            url_input.send_keys("https://www.instagram.com/reels/C-Jn-r6sHVf/")
+            url_input.send_keys(message)
 
             # Remove the cookie box consent 
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@class='fc-button fc-cta-consent fc-primary-button']")))
